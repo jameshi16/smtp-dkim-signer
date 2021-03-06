@@ -33,11 +33,12 @@ var defaultHeaderKeys = []string{
 }
 
 type configAcmeLe struct {
-	Agreed        bool
-	Contact       string
-	Challenge     string
-	ChallengeHost string
-	ChallengePort int
+	Agreed          bool
+	Contact         string
+	Challenge       string
+	ChallengeDomain string
+	ChallengeHost   string
+	ChallengePort   int
 }
 
 type configVHost struct {
@@ -48,6 +49,7 @@ type configVHost struct {
 	HeaderCan   string
 	BodyCan     string
 	HeaderKeys  []string
+	Whitelisted []string
 }
 
 type configLogging struct {

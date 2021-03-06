@@ -66,6 +66,11 @@ func main() {
 		log.SetLevel(l)
 	}
 
+	if cfg.LetsEncrypt.ChallengeDomain != "" {
+		log.Info("LetsEncrypt Challenge Domain not configured. Using parameter in Domain")
+		cfg.LetsEncrypt.ChallengeDomain = cfg.Domain
+	}
+
 	if cfg.Rollbar != nil && cfg.Rollbar.AccessToken != "" {
 		rollbar.SetStackTracer(errors.StackTracer)
 		rollrus.SetupLogging(cfg.Rollbar.AccessToken, cfg.Rollbar.Environment)

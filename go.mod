@@ -1,4 +1,4 @@
-module github.com/mback2k/smtp-dkim-signer
+module github.com/jameshi16/smtp-dkim-signer
 
 go 1.12
 

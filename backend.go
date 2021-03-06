@@ -45,6 +45,7 @@ var (
 type backendVHost struct {
 	Description string
 	ByDomain    string
+	Whitelisted []string
 	ProxyBe     *smtpproxy.Backend
 	DkimOpt     *dkim.SignOptions
 }
@@ -63,6 +64,10 @@ type sessionState struct {
 }
 
 func (bkdvh *backendVHost) Login(state *smtp.ConnectionState, username, password string) (smtp.Session, error) {
+	if !bkdvh.whitelisted(username) {
+		return nil, ErrAuthFailed
+	}
+
 	session, err := bkdvh.ProxyBe.Login(state, username, password)
 	if err != nil {
 		return nil, err
@@ -72,6 +77,15 @@ func (bkdvh *backendVHost) Login(state *smtp.ConnectionState, username, password
 
 func (bkdvh *backendVHost) AnonymousLogin(state *smtp.ConnectionState) (smtp.Session, error) {
 	return nil, smtp.ErrAuthRequired
+}
+
+func (bkdvh *backendVHost) whitelisted(username string) bool {
+	for _, whitelisteduser := range bkdvh.Whitelisted {
+		if whitelisteduser == username {
+			return true
+		}
+	}
+	return false
 }
 
 func (s *sessionState) generateMessageID() string {
@@ -210,6 +224,7 @@ func makeBackend(cfg *config) (*backend, error) {
 		vhostbe := &backendVHost{ByDomain: cfg.Domain, DkimOpt: dkimopt}
 		vhostbe.Description = fmt.Sprintf("VirtualHost #%d: %s via %s", idx, cfgvh.Domain, cfgvh.Upstream)
 		vhostbe.ProxyBe = smtpproxy.NewTLS(cfgvh.Upstream, &tls.Config{})
+		vhostbe.Whitelisted = cfgvh.Whitelisted
 
 		be.VHosts[cfgvh.Domain] = vhostbe
 	}

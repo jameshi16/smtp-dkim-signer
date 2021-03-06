@@ -1,5 +1,18 @@
 smtp-dkim-signer
 ================
+
+[![Build & Release](https://github.com/jameshi16/smtp-dkim-signer/actions/workflows/build.yml/badge.svg)](https://github.com/jameshi16/smtp-dkim-signer/actions/workflows/build.yml)
+
+Some modifications to [@mback2k](https://github.com/mback2k)'s [smtp-dkim-signer](https://github.com/mback2k/smtp-dkim-signer). The changes here mainly does the following:
+
+1. Allows usage of a different `Domain` for LetsEncrypt verification;
+2. GitHub Actions CI;
+3. SMTP Username whitelisting.
+
+The original README starts below this section.
+
+---
+
 This Go program is a SMTP-proxy that DKIM-signs e-mails
 before submission to an upstream SMTP-server.
 
