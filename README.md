@@ -9,6 +9,50 @@ Some modifications to [@mback2k](https://github.com/mback2k)'s [smtp-dkim-signer
 2. GitHub Actions CI;
 3. SMTP Username whitelisting.
 
+An updated config would look like the following:
+
+```
+Address: "<if you expose this server, change this address>:25"
+Domain: "<your domain>"
+LetsEncrypt:
+  Agreed: true
+  Contact: your-name@your-domain.tld
+  Challenge: http
+  ChallengeDomain: <can be a different domain than the Domain paramter above>
+  ChallengePort: 80
+VirtualHosts:
+  - Domain: <should be the same as the address behind '@', like gmail.com or yahoo.com>
+    SelectorDomain: "<your domain>"
+    SecurityLevel: <0 or 1, 0 for TLS, 1 for StartTLS>
+    Upstream: "your-upstream-smtp:465"
+    Selector: "your-dkim-selector"
+    PrivKeyPath: "your-private-key-file" OR |
+      your-private-key-data
+    HeaderCan: "relaxed"
+    BodyCan: "simple"
+    Whitelisted: ["<email addresses allowed to login to this proxy. leave blank for no email addresses>"]
+HeaderKeys:
+  - "From"
+  - "Reply-To"
+  - "Subject"
+  - "Date"
+  - "To"
+  - "Cc"
+  - "In-Reply-To"
+  - "References"
+  - "Message-ID"
+  - "Resent-Date"
+  - "Resent-From"
+  - "Resent-To"
+  - "Resent-Cc"
+# optional:
+Rollbar:
+  AccessToken: "your-rollbar-access-token"
+  Environment: production
+```
+
+Copyright (C) 2021, James for any changes made by me.
+
 The original README starts below this section.
 
 ---
