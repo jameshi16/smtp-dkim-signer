@@ -56,8 +56,8 @@ func makeOptions(cfg *config, cfgvh *configVHost) (*dkim.SignOptions, error) {
 	if cfg == nil || cfgvh == nil {
 		return nil, fmt.Errorf("this should never happen")
 	}
-	if cfgvh.Domain == "" {
-		return nil, fmt.Errorf("no VirtualHost.Domain specified")
+	if cfgvh.SelectorDomain == "" || cfgvh.Domain == "" {
+		return nil, fmt.Errorf("no VirtualHost.SelectorDomain / VirtualHost.Domain specified")
 	}
 	if cfgvh.Selector == "" {
 		return nil, fmt.Errorf("no VirtualHost.Selector specified")
@@ -70,13 +70,18 @@ func makeOptions(cfg *config, cfgvh *configVHost) (*dkim.SignOptions, error) {
 		cfgvh.HeaderKeys = cfg.HeaderKeys
 	}
 
+	domain := cfgvh.SelectorDomain
+	if domain == "" {
+		domain = cfgvh.Domain
+	}
+
 	privkey, err := loadPrivKey(cfgvh.PrivKeyPath)
 	if err != nil {
 		return nil, fmt.Errorf("unable to load VirtualHost.PrivKeyPath due to: %s", err)
 	}
 
 	dkimopt := &dkim.SignOptions{
-		Domain:                 cfgvh.Domain,
+		Domain:                 domain,
 		Selector:               cfgvh.Selector,
 		Signer:                 privkey,
 		Hash:                   crypto.SHA256,

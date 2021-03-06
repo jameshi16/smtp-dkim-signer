@@ -21,6 +21,7 @@ package main
 import (
 	"time"
 
+	sprox "github.com/emersion/go-smtp-proxy"
 	"github.com/spf13/viper"
 )
 
@@ -42,14 +43,16 @@ type configAcmeLe struct {
 }
 
 type configVHost struct {
-	Domain      string
-	Upstream    string
-	Selector    string
-	PrivKeyPath string
-	HeaderCan   string
-	BodyCan     string
-	HeaderKeys  []string
-	Whitelisted []string
+	Domain         string
+	Upstream       string
+	SelectorDomain string
+	Selector       string
+	PrivKeyPath    string
+	HeaderCan      string
+	BodyCan        string
+	HeaderKeys     []string
+	Whitelisted    []string
+	SecurityLevel  sprox.Security
 }
 
 type configLogging struct {

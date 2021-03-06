@@ -66,7 +66,7 @@ func main() {
 		log.SetLevel(l)
 	}
 
-	if cfg.LetsEncrypt.ChallengeDomain != "" {
+	if cfg.LetsEncrypt.ChallengeDomain == "" {
 		log.Info("LetsEncrypt Challenge Domain not configured. Using parameter in Domain")
 		cfg.LetsEncrypt.ChallengeDomain = cfg.Domain
 	}

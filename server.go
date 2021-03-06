@@ -82,10 +82,10 @@ func runServer(server *smtp.Server, smtps bool) error {
 
 	var err error
 	if smtps {
-		log.Info("Starting SMTPS server at", server.Addr)
+		log.Info("Starting SMTPS server at ", server.Addr)
 		err = server.ListenAndServeTLS()
 	} else {
-		log.Info("Starting SMTP server at", server.Addr)
+		log.Info("Starting SMTP server at ", server.Addr)
 		err = server.ListenAndServe()
 	}
 	return err

@@ -64,7 +64,7 @@ type sessionState struct {
 }
 
 func (bkdvh *backendVHost) Login(state *smtp.ConnectionState, username, password string) (smtp.Session, error) {
-	if !bkdvh.whitelisted(username) {
+	if len(bkdvh.Whitelisted) > 0 && !bkdvh.whitelisted(username) {
 		return nil, ErrAuthFailed
 	}
 
@@ -221,9 +221,22 @@ func makeBackend(cfg *config) (*backend, error) {
 			return nil, fmt.Errorf("unable to setup VirtualHost #%d due to: %s", idx, err)
 		}
 
-		vhostbe := &backendVHost{ByDomain: cfg.Domain, DkimOpt: dkimopt}
+		domain := cfgvh.SelectorDomain
+		if domain == "" {
+			domain = cfgvh.Domain
+		}
+
+		vhostbe := &backendVHost{ByDomain: domain, DkimOpt: dkimopt}
 		vhostbe.Description = fmt.Sprintf("VirtualHost #%d: %s via %s", idx, cfgvh.Domain, cfgvh.Upstream)
-		vhostbe.ProxyBe = smtpproxy.NewTLS(cfgvh.Upstream, &tls.Config{})
+
+		switch cfgvh.SecurityLevel {
+		case smtpproxy.SecurityTLS:
+			vhostbe.ProxyBe = smtpproxy.NewTLS(cfgvh.Upstream, &tls.Config{})
+		case smtpproxy.SecurityStartTLS:
+			vhostbe.ProxyBe = smtpproxy.New(cfgvh.Upstream)
+		default:
+			return nil, fmt.Errorf("unsupported SecurityLevel for VirtualHost #%d", idx)
+		}
 		vhostbe.Whitelisted = cfgvh.Whitelisted
 
 		be.VHosts[cfgvh.Domain] = vhostbe
